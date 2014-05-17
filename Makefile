@@ -7,7 +7,7 @@ SDL_INCLUDE = -I/usr/local/include
 # You may need to change -std=c++11 to -std=c++0x if your compiler is a bit older
 CXXFLAGS = -Wall -c -std=c++0x $(SDL_INCLUDE)
 LDFLAGS = $(SDL_LIB)
-EXE = SDL_Lesson0
+EXE = a.out
 
 all: $(EXE)
 
