@@ -28,4 +28,6 @@ port = 8888
             # should exit and run the new script
             process.exit 0
       .catch (e) -> res.send 500, e
+  ..get '/focus' (req, res) ->
+    res.send void
   ..listen port, -> console.log "listen on #{port}"

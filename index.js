@@ -26,7 +26,7 @@
           } else {
             return sync().then(function(){
               res.send(remotes[0].commit.id);
-              return process.exit(1);
+              return process.exit(0);
             });
           }
         });
@@ -34,6 +34,9 @@
     })['catch'](function(e){
       return res.send(500, e);
     });
+  });
+  x$.get('/focus', function(req, res){
+    return res.send(void 8);
   });
   x$.listen(port, function(){
     return console.log("listen on " + port);
