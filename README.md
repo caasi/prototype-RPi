@@ -1,5 +1,11 @@
 # prototype-RPi
 
+## usage
+
+* /version
+  * GET: show current commit id
+  * PUT: update the app
+
 ## JavaScript
 
 node-openvg-canvas may be a good choice, but I cant find anything like exec\* in Python.
