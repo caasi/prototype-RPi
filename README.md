@@ -1,6 +1,12 @@
 # prototype-RPi
 
-## notes
+## JavaScript
+
+node-openvg-canvas may be a good choice, but I cant find anything like exec\* in Python.
+
+## Python
+
+### notes
 
 exec\* functions execute a new program, replacing the current process; they do not return. On Unix, the new executable is loaded into the current process, and will have the same process id as the caller.
 

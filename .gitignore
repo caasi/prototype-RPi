@@ -1,2 +1,4 @@
+node_modules/
 os/
-*.pyc
+npm-debug.log
+*.swp
