@@ -4,7 +4,8 @@
   "description": "experiment about python, node.js and Raspberry Pi",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/gulp/bin/gulp.js --require LiveScript; node ./index.js;",
+    "prestart": "./node_modules/gulp/bin/gulp.js --require LiveScript",
+    "start": "./node_modules/forever/bin/forever ./index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,6 +24,7 @@
   "dependencies": {
     "bluebird": "^1.2.4",
     "express": "^4.3.1",
+    "forever": "^0.11.1",
     "gift": "^0.4.1",
     "openvg-canvas": "^1.1.7"
   },

@@ -26,6 +26,6 @@ port = 8888
           sync!then ->
             res.send remotes.0.commit.id
             # should exit and run the new script
-            process.exit 1
+            process.exit 0
       .catch (e) -> res.send 500, e
   ..listen port, -> console.log "listen on #{port}"
