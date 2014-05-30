@@ -3,6 +3,13 @@ require! gift
 require! bluebird
 require! winston
 
+Canvas = require 'openvg-canvas'
+canvas = new Canvas
+ctx = canvas.getContext \2d
+  ..fillStyle = '#16161d'
+  ..fillRect 0, 0, 1280, 1024
+canvas.vgSwapBuffers!
+
 logger = new winston.Logger do
   transports:
     * new winston.transports.Console colorize: true

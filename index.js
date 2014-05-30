@@ -1,9 +1,15 @@
 (function(){
-  var express, gift, bluebird, winston, logger, repo, currentCommit, remoteFetch, remotes, sync, possibleIp, port, x$, app;
+  var express, gift, bluebird, winston, Canvas, canvas, x$, ctx, logger, repo, currentCommit, remoteFetch, remotes, sync, possibleIp, port, y$, app;
   express = require('express');
   gift = require('gift');
   bluebird = require('bluebird');
   winston = require('winston');
+  Canvas = require('openvg-canvas');
+  canvas = new Canvas;
+  x$ = ctx = canvas.getContext('2d');
+  x$.fillStyle = '#16161d';
+  x$.fillRect(0, 0, 1280, 1024);
+  canvas.vgSwapBuffers();
   logger = new winston.Logger({
     transports: [new winston.transports.Console({
       colorize: true
@@ -18,8 +24,8 @@
     return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   };
   port = 8888;
-  x$ = app = express();
-  x$.get('/version', function(req, res){
+  y$ = app = express();
+  y$.get('/version', function(req, res){
     logger.info("GET /version from " + possibleIp(req));
     return currentCommit().then(function(commit){
       logger.info("SEND commit id: " + commit.id);
@@ -29,7 +35,7 @@
       return res.send(500, e);
     });
   });
-  x$.put('/version', function(req, res){
+  y$.put('/version', function(req, res){
     logger.info("PUT /version from " + possibleIp(req));
     return remoteFetch('origin').then(function(){
       return remotes().then(function(remotes){
@@ -51,11 +57,11 @@
       return res.send(500, e);
     });
   });
-  x$.get('/focus', function(req, res){
+  y$.get('/focus', function(req, res){
     logger.info("GET /focus from " + possibleIp(req));
     return res.send(void 8);
   });
-  x$.listen(port, function(){
+  y$.listen(port, function(){
     return logger.info("APIs listen on " + port);
   });
 }).call(this);
