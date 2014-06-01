@@ -1,19 +1,32 @@
 require! express
 require! gift
 require! bluebird
+require! fs
 require! winston
-
-Canvas = require 'openvg-canvas'
-canvas = new Canvas
-ctx = canvas.getContext \2d
-  ..fillStyle = '#16161d'
-  ..fillRect 0, 0, 1280, 1024
-canvas.vgSwapBuffers!
 
 logger = new winston.Logger do
   transports:
     * new winston.transports.Console colorize: true
     ...
+
+read-file = bluebird.promisify fs.readFile
+
+Canvas = require 'openvg-canvas'
+Image = Canvas.Image
+read-file "./resources/Raspi256x256.png" .then (data) ->
+  # a Canvas should be new first before
+  # any Image can work, may be caused by
+  # vg.init()
+  canvas = new Canvas
+  img = new Image
+  img.src = data
+  ctx = canvas.getContext \2d
+    ..fillStyle = '#16161d'
+    ..fillRect 0, 0, 1280, 1024
+    ..drawImage img, (1280 - 256) / 2, (1024 - 256) / 2, 256, 256
+  canvas.vgSwapBuffers!
+.catch (e) ->
+  logger.error "cannot open file: #{e}"
 
 repo = gift "./"
 current-commit = bluebird.promisify repo.current_commit, repo
