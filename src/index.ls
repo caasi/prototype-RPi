@@ -2,12 +2,19 @@ require! express
 require! gift
 require! bluebird
 require! fs
+require! getmac
 require! winston
 
 logger = new winston.Logger do
   transports:
     * new winston.transports.Console colorize: true
     ...
+
+get-mac = bluebird.promisify getmac.getMac
+
+get-mac!
+  .then console.log
+  .catch (e) -> console.log "cannot get MAC address: #{e}"
 
 read-file = bluebird.promisify fs.readFile
 

@@ -1,14 +1,19 @@
 (function(){
-  var express, gift, bluebird, fs, winston, logger, readFile, Canvas, Image, repo, currentCommit, remoteFetch, remotes, sync, possibleIp, port, x$, app;
+  var express, gift, bluebird, fs, getmac, winston, logger, getMac, readFile, Canvas, Image, repo, currentCommit, remoteFetch, remotes, sync, possibleIp, port, x$, app;
   express = require('express');
   gift = require('gift');
   bluebird = require('bluebird');
   fs = require('fs');
+  getmac = require('getmac');
   winston = require('winston');
   logger = new winston.Logger({
     transports: [new winston.transports.Console({
       colorize: true
     })]
+  });
+  getMac = bluebird.promisify(getmac.getMac);
+  getMac().then(console.log)['catch'](function(e){
+    return console.log("cannot get MAC address: " + e);
   });
   readFile = bluebird.promisify(fs.readFile);
   Canvas = require('openvg-canvas');
