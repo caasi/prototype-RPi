@@ -28,6 +28,7 @@
     "getmac": "^1.0.6",
     "gift": "^0.4.1",
     "openvg-canvas": "^1.1.7",
+    "request": "^2.36.0",
     "winston": "^0.7.3"
   },
   "devDependencies": {

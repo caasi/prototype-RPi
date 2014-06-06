@@ -18,6 +18,7 @@ if [ "$_IP" ]; then
 fi
 
 cd /home/pi/prototype-RPi/
+export PORT=80
 /usr/local/bin/npm start
 
 exit 0
