@@ -20,12 +20,17 @@ gulp.task \build <[install]> ->
   .pipe livescript!
   .pipe gulp.dest path.build
 
+gulp.task \watch ->
+  gulp.watch do
+    * './src/**/*.ls'
+      './package.json'
+    <[build]>
+
 gulp.task \run <[build]> ->
   nodemon do
     script: 'index.js'
-    ext: 'json ls'
+    ext: 'js'
     env:
       NODE_ENV: \production
-  .on \change <[build]>
 
-gulp.task \default <[run]>
+gulp.task \default <[watch run]>

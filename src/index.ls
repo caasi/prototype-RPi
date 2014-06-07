@@ -7,6 +7,8 @@ require! gift
 require! express
 
 config =
+  width: 1920
+  height: 1080
   port: +process.env.PORT or 8888
   openvg-canvas: true
 
@@ -25,8 +27,9 @@ get-mac!
   .then (mac) ->
     logger.info "MAC address: #mac"
     mac = mac.split ':' .join ''
-    get "http://srv.maan95.com/raspberrypis/berrypis?mac_registration=#mac"
+    get "http://srv.maan95.com/berries.json?mac_registration=#mac"
   .then ([res, body]) ->
+    console.log body
     throw new Error 'Remote response is not OK' unless res.statusCode is 200
     logger.debug JSON.parse body
   .catch (e) ->
@@ -99,8 +102,8 @@ if config.openvg-canvas
     img.src = data
     ctx = canvas.getContext \2d
       ..fillStyle = '#16161d'
-      ..fillRect 0, 0, 1280, 1024
-      ..drawImage img, (1280 - 256) / 2, (1024 - 256) / 2, 256, 256
+      ..fillRect 0, 0, config.width, config.height
+      ..drawImage img, (config.width - 256) / 2, (config.height - 256) / 2, 256, 256
     canvas.vgSwapBuffers!
   .catch (e) ->
     logger.error "#e"
