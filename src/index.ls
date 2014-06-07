@@ -10,7 +10,6 @@ config =
   width: 1920
   height: 1080
   port: +process.env.PORT or 8888
-  openvg-canvas: true
 
 logger = new winston.Logger do
   transports:
@@ -89,9 +88,8 @@ try
   Canvas = require 'openvg-canvas'
 catch
   logger.error "#e"
-  config.openvg-canvas = false
 
-if config.openvg-canvas
+if Canvas
   Image = Canvas.Image
   read-file "./resources/Raspi256x256.png" .then (data) ->
     # a Canvas should be new first before
