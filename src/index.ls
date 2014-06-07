@@ -67,7 +67,7 @@ possible-ip = (req) ->
           sync!then ->
             logger.info "SEND commit id: #{remotes.0.commit.id}, update itself and leave"
             res.send remotes.0.commit.id
-            # should exit and run the new script
+            # will be restarted by nodemon
             process.exit 0
       .catch (e) ->
         logger.error "#e"

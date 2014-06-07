@@ -4,8 +4,7 @@
   "description": "experiment about python, node.js and Raspberry Pi",
   "main": "index.js",
   "scripts": {
-    "prestart": "./node_modules/gulp/bin/gulp.js --require LiveScript",
-    "start": "./node_modules/forever/bin/forever ./index.js",
+    "start": "./node_modules/gulp/bin/gulp.js --require LiveScript",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,19 +21,18 @@
   },
   "homepage": "https://github.com/caasi/prototype-RPi",
   "dependencies": {
+    "LiveScript": "^1.2.0",
     "bluebird": "^1.2.4",
     "express": "^4.3.1",
-    "forever": "^0.11.1",
     "getmac": "^1.0.6",
     "gift": "^0.4.1",
+    "gulp": "^3.6.2",
+    "gulp-concat": "^2.2.0",
+    "gulp-install": "^0.1.5",
+    "gulp-livescript": "^0.3.0",
+    "gulp-nodemon": "^1.0.4",
     "openvg-canvas": "^1.1.7",
     "request": "^2.36.0",
     "winston": "^0.7.3"
-  },
-  "devDependencies": {
-    "LiveScript": "^1.2.0",
-    "gulp": "^3.6.2",
-    "gulp-concat": "^2.2.0",
-    "gulp-livescript": "^0.3.0"
   }
 }

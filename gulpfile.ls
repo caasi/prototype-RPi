@@ -1,12 +1,18 @@
 require! <[gulp]>
-concat = require \gulp-concat
+install    = require \gulp-install
+concat     = require \gulp-concat
 livescript = require \gulp-livescript
+nodemon    = require \gulp-nodemon
 
 path =
   src: './src'
   build: '.'
 
-gulp.task \js ->
+gulp.task \install ->
+  gulp.src './package.json'
+  .pipe install!
+
+gulp.task \build <[install]> ->
   gulp.src do
     * "#{path.src}/*.ls"
     ...
@@ -14,4 +20,12 @@ gulp.task \js ->
   .pipe livescript!
   .pipe gulp.dest path.build
 
-gulp.task \default <[js]>
+gulp.task \run <[build]> ->
+  nodemon do
+    script: 'index.js'
+    ext: 'json ls'
+    env:
+      NODE_ENV: \production
+  .on \change <[build]>
+
+gulp.task \default <[run]>

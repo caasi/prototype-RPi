@@ -2,3 +2,4 @@ node_modules/
 os/
 npm-debug.log
 *.swp
+index.js
