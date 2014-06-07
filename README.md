@@ -3,10 +3,11 @@
 ## usage
 
 ```shell
+npm install
 npm start
 ```
 
-`gulp-install` ande `gulp-nodemon` will install the dependencies and run the app.
+After first install command, `gulp-install` ande `gulp-nodemon` will install the dependencies and run the app after updating itself.
 
 ## client APIs
 
