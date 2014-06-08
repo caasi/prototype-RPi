@@ -22,15 +22,21 @@ logger = new winston.Logger do
 get     = bluebird.promisify request.get
 get-mac = bluebird.promisify getmac.getMac
 
+
 get-mac!
   .then (mac) ->
     logger.info "MAC address: #mac"
     mac = mac.split ':' .join ''
-    get "http://srv.maan95.com/berries.json?mac_registration=#mac"
-  .then ([res, body]) ->
-    console.log body
-    throw new Error 'Remote response is not OK' unless res.statusCode is 200
-    logger.debug JSON.parse body
+    :check-state let
+      setTimeout check-state, 10mins * 60secs * 1000ms
+      get "http://srv.maan95.com/berries.json?mac_registration=#mac"
+        .then !([res, body]) ->
+          throw new Error 'Remote response is not OK' unless res.statusCode is 200
+          result = JSON.parse body
+          switch result.state
+          | \ok       => logger.info "belong to room #{result.room}"
+          | \fail     => logger.info 'not registered to any room'
+          | otherwise => throw new Error "Unknown state: #{result.state}"
   .catch (e) ->
     logger.error "#e"
 
@@ -70,14 +76,13 @@ possible-ip = (req) ->
             logger.info "SEND commit id: #{remotes.0.commit.id}, update itself and leave"
             res.send remotes.0.commit.id
             # will be restarted by nodemon
-            process.exit 0
       .catch (e) ->
         logger.error "#e"
         res.send 500, e
   ..get '/focus' (req, res) ->
     logger.info "GET /focus from #{possible-ip req}"
     res.send void
-  ..listen config.port, -> logger.info "APIs listen on #{config.port}"
+  ..listen config.port, -> logger.info "listen on #{config.port}"
 
 ###
 # draw things if openvg-canvas is available
