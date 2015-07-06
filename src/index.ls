@@ -1,10 +1,13 @@
-require! winston
-require! bluebird
-require! fs
-require! request
-require! getmac
-require! gift
-require! express
+require! {
+  'winston'
+  'bluebird'
+  'fs'
+  'request'
+  'getmac'
+  'gift'
+  'express'
+  'parse': { Parse }
+}
 
 config =
   width: 1920
@@ -22,21 +25,47 @@ logger = new winston.Logger do
 get     = bluebird.promisify request.get
 get-mac = bluebird.promisify getmac.getMac
 
+Parse.initialize do
+  \UuLvFkfqRFd23kkjgSBMgaC6viUxrPF5XNmDATV2
+  \4Y9nMtjKC7Z4VhQhUzj20bi4rGXsFbYufSN41TfP
+
+findFileById = (bs) ->
+  { id } = bs.0
+  logger.info "Berry id: #id"
+  query = new Parse.Query \BerryFile
+  query.equalTo \Berry, id
+  query.find!
 
 get-mac!
   .then (mac) ->
     logger.info "MAC address: #mac"
     mac = mac.split ':' .join ''
-    :check-state let
-      setTimeout check-state, 10mins * 60secs * 1000ms
-      get "http://srv.maan95.com/berries.json?mac_registration=#mac"
-        .then !([res, body]) ->
-          throw new Error 'Remote response is not OK' unless res.statusCode is 200
-          result = JSON.parse body
-          switch result.state
-          | \ok       => logger.info "belong to room #{result.room}"
-          | \fail     => logger.info 'not registered to any room'
-          | otherwise => throw new Error "Unknown state: #{result.state}"
+    Berry = Parse.Object.extend \Berry
+    isWireless = new Parse.Query \Berry
+    isWireless.equalTo \WirelessMac, mac
+    isLan = new Parse.Query \Berry
+    isLan.equalTo \LanMac, mac
+    query = Parse.Query.or isWireless, isLan
+    query.find!
+      .then do
+        findFileById
+        ->
+          logger.info "register the Berry: #mac"
+          obj = new Berry
+          obj.save { WirelessMac: mac, LanMac: '' }
+            .then do
+              findFileById
+              -> logger.error it
+    #:check-state let
+    #  setTimeout check-state, 10mins * 60secs * 1000ms
+    #  get "http://srv.maan95.com/berries.json?mac_registration=#mac"
+    #    .then !([res, body]) ->
+    #      throw new Error 'Remote response is not OK' unless res.statusCode is 200
+    #      result = JSON.parse body
+    #      switch result.state
+    #      | \ok       => logger.info "belong to room #{result.room}"
+    #      | \fail     => logger.info 'not registered to any room'
+    #      | otherwise => throw new Error "Unknown state: #{result.state}"
   .catch (e) ->
     logger.error "#e"
 
@@ -53,7 +82,7 @@ possible-ip = (req) ->
   req.headers['x-forwarded-for'] or req.connection.remoteAddress
 
 (app = express!)
-  ..get '/version' (req, res) ->
+  .get '/version' (req, res) ->
     logger.info "GET /version from #{possible-ip req}"
     current-commit!
       .then (commit) ->
@@ -62,7 +91,7 @@ possible-ip = (req) ->
       .catch (e) ->
         logger.error "#e"
         res.send 500, e
-  ..put '/version' (req, res) ->
+  .put '/version' (req, res) ->
     logger.info "PUT /version from #{possible-ip req}"
     remote-fetch 'origin'
       .then ->
@@ -79,10 +108,10 @@ possible-ip = (req) ->
       .catch (e) ->
         logger.error "#e"
         res.send 500, e
-  ..get '/focus' (req, res) ->
+  .get '/focus' (req, res) ->
     logger.info "GET /focus from #{possible-ip req}"
     res.send void
-  ..listen config.port, -> logger.info "listen on #{config.port}"
+  .listen config.port, -> logger.info "listen on #{config.port}"
 
 ###
 # draw things if openvg-canvas is available
@@ -96,18 +125,19 @@ catch
 
 if Canvas
   Image = Canvas.Image
-  read-file "./resources/Raspi256x256.png" .then (data) ->
-    # a Canvas should be new first before
-    # any Image can work, may be caused by
-    # vg.init()
-    canvas = new Canvas
-    img = new Image
-    img.src = data
-    ctx = canvas.getContext \2d
-      ..fillStyle = '#16161d'
-      ..fillRect 0, 0, config.width, config.height
-      ..drawImage img, (config.width - 256) / 2, (config.height - 256) / 2, 256, 256
-    canvas.vgSwapBuffers!
-  .catch (e) ->
-    logger.error "#e"
+  read-file "./resources/Raspi256x256.png"
+    .then (data) ->
+      # a Canvas should be new first before
+      # any Image can work, may be caused by
+      # vg.init()
+      canvas = new Canvas
+      img = new Image
+      img.src = data
+      ctx = canvas.getContext \2d
+        ..fillStyle = '#16161d'
+        ..fillRect 0, 0, config.width, config.height
+        ..drawImage img, (config.width - 256) / 2, (config.height - 256) / 2, 256, 256
+      canvas.vgSwapBuffers!
+    .catch (e) ->
+      logger.error "#e"
 
