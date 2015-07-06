@@ -14,3 +14,7 @@ After first install command, `gulp-install` ande `gulp-nodemon` will install the
 * /version
   * GET: show current commit id
   * PUT: update the app
+
+## TODO
+
+* select specific network interface

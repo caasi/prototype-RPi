@@ -21,18 +21,18 @@
   },
   "homepage": "https://github.com/caasi/prototype-RPi",
   "dependencies": {
-    "LiveScript": "^1.2.0",
-    "bluebird": "^1.2.4",
-    "express": "^4.3.1",
-    "getmac": "^1.0.6",
-    "gift": "^0.4.1",
-    "gulp": "^3.7.0",
-    "gulp-concat": "^2.2.0",
-    "gulp-install": "^0.1.5",
-    "gulp-livescript": "^0.3.0",
-    "gulp-nodemon": "^1.0.4",
-    "request": "^2.36.0",
-    "winston": "^0.7.3"
+    "bluebird": "^2.9.32",
+    "express": "^4.13.1",
+    "getmac": "^1.0.7",
+    "gift": "^0.6.1",
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-install": "^0.4.0",
+    "gulp-livescript": "^2.4.0",
+    "gulp-nodemon": "^2.0.3",
+    "livescript": "^1.4.0",
+    "request": "^2.58.0",
+    "winston": "^1.0.1"
   },
   "optionalDependencies": {
     "openvg-canvas": "^1.1.7"
