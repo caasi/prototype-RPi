@@ -28,46 +28,54 @@ get-mac = bluebird.promisify getmac.getMac
 Parse.initialize do
   \UuLvFkfqRFd23kkjgSBMgaC6viUxrPF5XNmDATV2
   \4Y9nMtjKC7Z4VhQhUzj20bi4rGXsFbYufSN41TfP
+Berry = Parse.Object.extend \Berry
+BerryFile = Parse.Object.extend \BerryFile
 
-findFileById = (bs) ->
-  { id } = bs.0
-  logger.info "Berry id: #id"
+findBerriesByMAC = (mac) ->
+  logger.info "find Berries by MAC: #mac"
+  isWireless = new Parse.Query \Berry
+  isWireless.equalTo \WirelessMac, mac
+  isLan = new Parse.Query \Berry
+  isLan.equalTo \LanMac, mac
+  query = Parse.Query.or isWireless, isLan
+  query.find!
+
+removeDuplicatedBerries = (bs) ->
+  logger.info 'remove duplicated Berries'
+  last = bs.pop!
+  bs.forEach (.destroy!)
+  last
+
+findFilesById = (id) ->
+  logger.info "find BerryFile by id: #id"
   query = new Parse.Query \BerryFile
   query.equalTo \Berry, id
   query.find!
 
+registerBerryByMAC = (mac) ->
+  logger.info "register a new Berry by MAC: #mac"
+  new Berry!save { WirelessMac: mac, LanMac: '' }
+
+createFilesById = (id) ->
+  logger.info "create a new BerryFile by Berry id: #id"
+  new BerryFile!save { Berry: id, File: 'foo.bar' }
+
+var mac, id
 get-mac!
-  .then (mac) ->
-    logger.info "MAC address: #mac"
-    mac = mac.split ':' .join ''
-    Berry = Parse.Object.extend \Berry
-    isWireless = new Parse.Query \Berry
-    isWireless.equalTo \WirelessMac, mac
-    isLan = new Parse.Query \Berry
-    isLan.equalTo \LanMac, mac
-    query = Parse.Query.or isWireless, isLan
-    query.find!
-      .then do
-        findFileById
-        ->
-          logger.info "register the Berry: #mac"
-          obj = new Berry
-          obj.save { WirelessMac: mac, LanMac: '' }
-            .then do
-              findFileById
-              -> logger.error it
-    #:check-state let
-    #  setTimeout check-state, 10mins * 60secs * 1000ms
-    #  get "http://srv.maan95.com/berries.json?mac_registration=#mac"
-    #    .then !([res, body]) ->
-    #      throw new Error 'Remote response is not OK' unless res.statusCode is 200
-    #      result = JSON.parse body
-    #      switch result.state
-    #      | \ok       => logger.info "belong to room #{result.room}"
-    #      | \fail     => logger.info 'not registered to any room'
-    #      | otherwise => throw new Error "Unknown state: #{result.state}"
-  .catch (e) ->
-    logger.error "#e"
+  .then (.split ':' .join '')
+  .then -> mac := it
+  .then findBerriesByMAC
+  .then (bs) ->
+    if bs?length
+      then removeDuplicatedBerries bs
+      else registerBerryByMAC mac
+  .then -> id := it.id
+  .then findFilesById
+  .then (fs) ->
+    if fs?length
+      then fs
+      else Promise.all [createFilesById id]
+  .then -> console.log it
 
 ###
 # APIs
